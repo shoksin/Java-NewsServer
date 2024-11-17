@@ -5,22 +5,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Client {
 
     public static void main(String[] args) throws InterruptedException {
 
+        boolean isAdmin = false;
         try(Socket socket = new Socket("localhost", 3345);
             BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
             DataOutputStream oos = new DataOutputStream(socket.getOutputStream());
             DataInputStream ois = new DataInputStream(socket.getInputStream()); )
         {
-
-            System.out.println(socket.toString());
             System.out.println("Client connected to socket.");
-            System.out.println();
-            System.out.println("Client writing channel = oos & reading channel = ois initialized.");
-            System.out.println("Command:\ndd.mm.yyyy");
+            System.out.println("Command:\ndd.mm.yyyy - Get News for dd.mm.yyyy\nadd_news - Add News");
 
             while(!socket.isOutputShutdown()){
 
@@ -30,8 +30,51 @@ public class Client {
                     Thread.sleep(1000);
                     String clientCommand = br.readLine();
 
-                    oos.writeUTF(clientCommand);
-                    oos.flush();
+                    if(clientCommand.equals("add_news")){
+                        if(!isAdmin) {
+                            System.out.println("Enter password:");
+                            String password = br.readLine();
+                            if (password.equals("admin")){
+                                isAdmin = true;
+                            } else {
+                                System.out.println("Wrong password");
+                                continue;
+                            }
+                        }
+
+                        System.out.println("Enter title:");
+                        String title = br.readLine();
+                        System.out.println("Enter author:");
+                        String author = br.readLine();
+                        System.out.println("Enter content:");
+                        String content = "";
+                        String temp = "";
+                        while(!(temp = br.readLine()).equals("end")){
+                            content += temp + " ";
+                            System.out.println(content);
+                        }
+
+                        LocalDate today = LocalDate.now();
+
+                        int year = today.getYear();
+                        int month = today.getMonthValue();
+                        int day = today.getDayOfMonth();
+                        String date = day + "." + month + "." + year;
+                        News news = new News(date, title, author, content);
+                        oos.writeUTF(news.toString2());
+                        oos.flush();
+
+
+                    }
+                    else {
+                        if (!isValidDate(clientCommand)) {
+                            System.out.println("Invalid date format. Please use dd.mm.yyyy.");
+                            continue;
+                        }
+                        oos.writeUTF(clientCommand);
+                        oos.flush();
+                    }
+
                     System.out.println("Message " + clientCommand + " sended to server.");
                     Thread.sleep(1000);
 
@@ -67,6 +110,16 @@ public class Client {
             // TODO Auto-generated catch block
             System.out.println("Failed to connect to the socket");
             e.printStackTrace();
+        }
+    }
+
+    private static boolean isValidDate(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        try {
+            LocalDate date = LocalDate.parse(dateStr, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
         }
     }
 }

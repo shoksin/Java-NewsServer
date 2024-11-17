@@ -1,9 +1,5 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
-import java.io.FileReader;
-import java.io.BufferedReader;
 import java.util.List;
 
 public class MonoThreadHandler implements Runnable {
@@ -29,26 +25,41 @@ public class MonoThreadHandler implements Runnable {
             while (!clientDialog.isClosed()) {
                 System.out.println("Server reading from channel");
 
-                String date = in.readUTF();
+                String message = in.readUTF();
 
-                System.out.println("READ from clientDialog message - " + date);
+                System.out.println("READ from clientDialog message - " + message);
 
-                if (date.equalsIgnoreCase("quit")) {
+                if (message.equalsIgnoreCase("quit")) {
 
                     System.out.println("Client initialize connections suicide ...");
-                    out.writeUTF("Server reply - " + date + " - OK");
+                    out.writeUTF("Server reply - " + message + " - OK");
                     Thread.sleep(3000);
                     break;
                 }
 
-                List<News> news = NewsReader.readNewsFromFile("./src/news.txt",date);
+                if (message.length() > 10) {
+                    System.out.println("New news - " + message);
 
-                System.out.println("Server try writing to channel");
-                out.writeUTF("Server reply - news: " + news + " - OK");
-                System.out.println("Server Wrote message to clientDialog.");
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("./src/news.txt", true))) {
+                        writer.newLine();
+                        writer.write(message);
+                        System.out.println("New line added to the file.");
+                    }
 
 
-                out.flush();
+                    out.writeUTF("Server reply - "  + "big ball" + " - OK");
+                }
+                else {
+
+                    List<News> news = NewsReader.readNewsFromFile("./src/news.txt", message);
+
+                    System.out.println("Server try writing to channel");
+                    out.writeUTF("Server reply - news: " + news + " - OK");
+                    System.out.println("Server Wrote message to clientDialog.");
+                }
+
+                    out.flush();
+
 
             }
 

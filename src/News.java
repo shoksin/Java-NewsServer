@@ -11,7 +11,6 @@ public class News {
         this.content = content;
     }
 
-    // Геттеры и сеттеры
     public String getDate() {
         return date;
     }
@@ -50,5 +49,9 @@ public class News {
                 "Title: " + title + "\n" +
                 "Author: " + author + "\n" +
                 "Content: " + content + "\n";
+    }
+
+    public String toString2() {
+        return this.date + "\n" + this.title + "\n" + this.author + "\n" + this.content + "\n";
     }
 }
