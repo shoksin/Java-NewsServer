@@ -16,10 +16,11 @@ public class Client {
             DataInputStream ois = new DataInputStream(socket.getInputStream()); )
         {
 
+            System.out.println(socket.toString());
             System.out.println("Client connected to socket.");
             System.out.println();
             System.out.println("Client writing channel = oos & reading channel = ois initialized.");
-            System.out.println("Command:\ndd.mm.yy");
+            System.out.println("Command:\ndd.mm.yyyy");
 
             while(!socket.isOutputShutdown()){
 
@@ -51,12 +52,10 @@ public class Client {
                     System.out.println("start waiting for data from server...");
                     Thread.sleep(2000);
 
-                    if(ois.read() > -1)     {
+                    System.out.println("reading...");
+                    String in = ois.readUTF();
+                    System.out.println(in);
 
-                        System.out.println("reading...");
-                        String in = ois.readUTF();
-                        System.out.println(in);
-                    }
                 }
             }
             System.out.println("Connection closed.");
