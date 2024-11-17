@@ -20,7 +20,7 @@ public class Client {
             DataInputStream ois = new DataInputStream(socket.getInputStream()); )
         {
             System.out.println("Client connected to socket.");
-            System.out.println("Command:\ndd.mm.yyyy - Get News for dd.mm.yyyy\nadd_news - Add News");
+            System.out.println("Commands:\ndd.mm.yyyy - Get News for dd.mm.yyyy\nadd_news - Add News\n");
 
             while(!socket.isOutputShutdown()){
 
@@ -98,6 +98,7 @@ public class Client {
                     System.out.println("reading...");
                     String in = ois.readUTF();
                     System.out.println(in);
+                    System.out.println("\nCommands:\ndd.mm.yyyy - Get News for dd.mm.yyyy\nadd_news - Add News\n");
 
                 }
             }

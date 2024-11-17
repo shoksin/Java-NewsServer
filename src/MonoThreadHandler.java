@@ -43,24 +43,19 @@ public class MonoThreadHandler implements Runnable {
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter("./src/news.txt", true))) {
                         writer.newLine();
                         writer.write(message);
-                        System.out.println("New line added to the file.");
                     }
 
-
-                    out.writeUTF("Server reply - "  + "big ball" + " - OK");
+                    out.writeUTF("Server reply - news added" + " - OK");
                 }
                 else {
 
                     List<News> news = NewsReader.readNewsFromFile("./src/news.txt", message);
 
                     System.out.println("Server try writing to channel");
-                    out.writeUTF("Server reply - news: " + news + " - OK");
-                    System.out.println("Server Wrote message to clientDialog.");
+                    out.writeUTF("Server reply - news:\n" + news + "\nOK");
+                    System.out.println("Server Wrote message to client.");
                 }
-
                     out.flush();
-
-
             }
 
             System.out.println("Client disconnected");
@@ -75,7 +70,6 @@ public class MonoThreadHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
